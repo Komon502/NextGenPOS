@@ -8,11 +8,27 @@ namespace NextGenPOS.Controls
 {
     /// <summary>
     /// Touch-friendly menu item card for order entry.
-    /// Shows item name, price, and a subtle gradient card with hover glow.
+    /// Shows image, item name, price, and a subtle gradient card with hover glow.
     /// </summary>
     public class MenuItemCard : Control
     {
-        public Models.MenuItem Item { get; set; }
+        private Models.MenuItem _item;
+        private Image _img;
+
+        public Models.MenuItem Item
+        {
+            get => _item;
+            set
+            {
+                _item = value;
+                if (_item != null && !string.IsNullOrEmpty(_item.ImagePath) && System.IO.File.Exists(_item.ImagePath))
+                {
+                    try { _img = Image.FromFile(_item.ImagePath); } catch { }
+                }
+                Invalidate();
+            }
+        }
+
         public event EventHandler ItemClicked;
 
         private bool _hovered;
@@ -22,7 +38,7 @@ namespace NextGenPOS.Controls
         {
             SetStyle(ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint
                    | ControlStyles.OptimizedDoubleBuffer | ControlStyles.ResizeRedraw, true);
-            Size = new Size(168, 108);
+            Size = new Size(168, 168);
             Cursor = Cursors.Hand;
         }
 
@@ -57,6 +73,22 @@ namespace NextGenPOS.Controls
                 using (var br = new LinearGradientBrush(rect, bgTop, bgBot, LinearGradientMode.Vertical))
                     g.FillPath(br, path);
 
+                // Draw Image if exists
+                if (_img != null)
+                {
+                    var imgRect = new Rectangle(rect.X, rect.Y, rect.Width, 90);
+                    g.SetClip(path);
+                    g.DrawImage(_img, imgRect);
+                    g.ResetClip();
+
+                    // Draw a gradient overlay to blend image bottom with card
+                    var overlayRect = new Rectangle(rect.X, imgRect.Bottom - 30, rect.Width, 30);
+                    using (var overlayBr = new LinearGradientBrush(overlayRect, Color.Transparent, bgTop, LinearGradientMode.Vertical))
+                    {
+                        g.FillRectangle(overlayBr, overlayRect);
+                    }
+                }
+
                 // Border
                 Color borderColor = _hovered
                     ? Color.FromArgb(180, ThemeManager.AccentLight)
@@ -69,19 +101,22 @@ namespace NextGenPOS.Controls
 
             using (var sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center })
             {
-                // Item name — up to 2 lines
-                var nameRect = new RectangleF(6, 10, Width - 12, 52);
+                int textStartY = _img != null ? 95 : 10;
+                int nameHeight = _img != null ? 35 : 52;
+
+                // Item name
+                var nameRect = new RectangleF(6, textStartY, Width - 12, nameHeight);
                 Color nameColor = _pressed ? Color.White : ThemeManager.TextPrimary;
                 using (var br = new SolidBrush(nameColor))
                     g.DrawString(Item.Name, ThemeManager.FontMediumB, br, nameRect, sf);
 
                 // Divider
-                int divY = 66;
+                int divY = textStartY + nameHeight + 4;
                 using (var pen = new Pen(Color.FromArgb(40, 255, 255, 255), 1))
                     g.DrawLine(pen, 12, divY, Width - 12, divY);
 
                 // Price
-                var priceRect = new RectangleF(4, 70, Width - 8, 28);
+                var priceRect = new RectangleF(4, divY + 4, Width - 8, 28);
                 Color priceColor = _pressed ? Color.White : ThemeManager.Warning;
                 using (var br = new SolidBrush(priceColor))
                     g.DrawString($"฿{Item.Price:N0}", ThemeManager.FontLarge, br, priceRect, sf);
@@ -95,4 +130,5 @@ namespace NextGenPOS.Controls
         protected override void OnClick(EventArgs e) { ItemClicked?.Invoke(this, e); base.OnClick(e); }
     }
 }
+
 

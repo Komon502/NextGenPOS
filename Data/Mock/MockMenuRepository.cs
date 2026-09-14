@@ -23,7 +23,7 @@ namespace NextGenPOS.Data.Mock
             _items = new List<MenuItem>
             {
                 // Appetizers
-                new MenuItem { ItemId=1,  CategoryId=1, Name="Spring Rolls",    Price=89m,  IsActive=true },
+                new MenuItem { ItemId=1,  CategoryId=1, Name="Spring Rolls",    Price=89m,  IsActive=true, ImagePath=@"Images\spring_rolls.jpg" },
                 new MenuItem { ItemId=2,  CategoryId=1, Name="Chicken Wings",   Price=129m, IsActive=true },
                 new MenuItem { ItemId=3,  CategoryId=1, Name="Garlic Bread",    Price=69m,  IsActive=true },
                 new MenuItem { ItemId=4,  CategoryId=1, Name="Tom Yum Soup",    Price=99m,  IsActive=true },

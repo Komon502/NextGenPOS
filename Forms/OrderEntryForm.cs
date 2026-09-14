@@ -98,7 +98,7 @@ namespace NextGenPOS.Forms
             var totalsPanel = new Panel
             {
                 Dock = DockStyle.Bottom,
-                Height = 175,
+                Height = 220,
                 BackColor = ThemeManager.BgCard,
                 Padding = new Padding(14, 10, 14, 10)
             };
