@@ -1,0 +1,13 @@
+# NextGen POS Configuration
+# Edit with Notepad - Key=Value pairs
+# Lines starting with # are comments
+
+DbPath=Database\NextGenPOS.accdb
+TestMode=true
+RestaurantName=NextGen Restaurant
+TaxRate=7
+Currency=THB
+PrinterPort=
+ReceiptWidth=48
+DailyResetTime=06:00
+DefaultStaff=Cashier01
